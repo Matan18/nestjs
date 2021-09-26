@@ -7,17 +7,22 @@ import {
   Param,
   Delete,
   Query,
+  UseFilters,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ToolsService } from './tools.service';
 import { CreateToolDto } from './dto/create-tool.dto';
 import { UpdateToolDto } from './dto/update-tool.dto';
 import { Prisma } from '@prisma/client';
+import { PrismaBodyExcpetionFilter } from './prisma-body-exception.filter';
+import { PrismaParamExcpetionFilter } from './prisma-param-exception.filter';
 
 @Controller('tools')
 export class ToolsController {
   constructor(private readonly toolsService: ToolsService) {}
 
   @Post()
+  @UseFilters(PrismaBodyExcpetionFilter)
   create(@Body() createToolDto: CreateToolDto) {
     return this.toolsService.createTool(createToolDto);
   }
@@ -55,12 +60,17 @@ export class ToolsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  @UseFilters(PrismaParamExcpetionFilter)
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.toolsService.tool({ id });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateToolDto: UpdateToolDto) {
+  @UseFilters(PrismaBodyExcpetionFilter, PrismaParamExcpetionFilter)
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateToolDto: UpdateToolDto,
+  ) {
     return this.toolsService.updateTool({
       where: { id },
       data: { ...updateToolDto },
@@ -68,7 +78,8 @@ export class ToolsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @UseFilters(PrismaParamExcpetionFilter)
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.toolsService.deleteTool({ id });
   }
 }
