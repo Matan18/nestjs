@@ -45,7 +45,7 @@ export class ToolsController {
         hasSome: tag,
       },
     };
-    const tagsFilter = tag ? hasSomeTagFilter : undefined;
+    const tagsFilter = tag ? hasSomeTagFilter : {};
 
     const containsTitleFilter: Prisma.ToolWhereInput = {
       title: { contains: title },
