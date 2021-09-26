@@ -9,6 +9,7 @@ import {
   Query,
   UseFilters,
   ParseUUIDPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ToolsService } from './tools.service';
 import { CreateToolDto } from './dto/create-tool.dto';
@@ -31,7 +32,7 @@ export class ToolsController {
   findAll(
     @Query('take') takeString: string,
     @Query('page') skipString: string,
-    @Query('tecs') tag: string,
+    @Query('tag') tag: string,
     @Query('title') title = '',
   ) {
     const take = isNaN(Number(takeString)) ? 10 : Number(takeString);
@@ -78,8 +79,9 @@ export class ToolsController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @UseFilters(PrismaParamExcpetionFilter)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.toolsService.deleteTool({ id });
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    await this.toolsService.deleteTool({ id });
   }
 }
